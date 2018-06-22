@@ -5,23 +5,24 @@ const Controller = require('egg').Controller;
 class TopicsController extends Controller {
   async index() {
     const { ctx } = this;
-    const rule = {
-      name: {
-        type: 'string'
-      },
-      page: {
-        type: 'number'
-      }
-    };
-    const timestemp = ctx.get('x-timestemp') || Date.now();
+    // const rule = {
+    //   name: {
+    //     type: 'string'
+    //   },
+    //   page: {
+    //     type: 'number'
+    //   }
+    // };
 
-    try {
-      ctx.validate(rule, ctx.query);
-    } catch (err) {
-      ctx.logger.warn(err.errors);
-      ctx.body = { success: false };
-      return;
-    }
+    // try {
+    //   ctx.validate(rule, ctx.query);
+    // } catch (err) {
+    //   ctx.logger.warn(err.errors);
+    //   ctx.body = { success: false };
+    //   return;
+    // }
+
+    ctx.model.Topic.findList();
     ctx.body = 'hi, topic';
   }
   async follow() {

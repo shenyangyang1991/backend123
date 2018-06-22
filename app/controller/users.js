@@ -87,6 +87,37 @@ class UsersController extends Controller {
     this.ctx.status = respJson.status;
     this.ctx.body = respJson;
   }
+  async wallet() {
+    const { ctx } = this;
+    const rule = {
+      id: {
+        type: 'string',
+      },
+    };
+    let respJson = {};
+
+    try {
+      ctx.validate(rule, ctx.params);
+    } catch (error) {
+      // error
+      respJson = resultJson(false, {}, '系统错误, 请您及时联系我们');
+      ctx.logger.error(error);
+      this.ctx.status = respJson.status;
+      this.ctx.body = respJson;
+      return;
+    }
+
+    let wallet = await ctx.model.UserWallet.findByUserId(ctx.params.id);
+
+    if (!wallet || wallet.error) {
+      respJson = resultJson(false, {}, '系统错误, 请您及时联系我们');
+    } else {
+      respJson = resultJson(true, wallet, '获取钱包信息成功');
+    }
+
+    this.ctx.status = respJson.status;
+    this.ctx.body = respJson;
+  }
 }
 
 module.exports = UsersController;

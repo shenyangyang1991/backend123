@@ -1,9 +1,12 @@
 'use strict';
 
 module.exports = app => {
-  const { STRING } = app.Sequelize;
+  const { STRING, INTEGER } = app.Sequelize;
 
   const User = app.model.define('User', {
+    wallet_id: {
+      type: INTEGER(11).UNSIGNED,
+    },
     nick_name: {
       type: STRING(16),
       allowNull: false,
@@ -24,7 +27,7 @@ module.exports = app => {
         where: {
           open_id
         },
-        attributes: ['nick_name', 'avatar_url', 'open_id'],
+        attributes: ['wallet_id', 'nick_name', 'avatar_url', 'open_id'],
       });
       if (row) {
         let result = row.get({
@@ -35,6 +38,7 @@ module.exports = app => {
         return null;
       }
     } catch (error) {
+      app.ctx.logger.error(error);
       return {
         error: true,
       };
@@ -50,16 +54,18 @@ module.exports = app => {
       });
       return row;
     } catch (error) {
+      app.ctx.logger.error(error);
       return {
         error: true,
       };
     }
   }
 
-  User.saveUser = async function (user) {
+  User.createUser = async function (user, t) {
     try {
       let row = await this.create(user, {
-        fields: ['nick_name', 'avatar_url', 'open_id'],
+        fields: ['wallet_id', 'nick_name', 'avatar_url', 'open_id'],
+        transaction: t,
       });
       if (row) {
         let result = row.get({
@@ -70,6 +76,7 @@ module.exports = app => {
         return null;
       }
     } catch (error) {
+      app.ctx.logger.error(error);
       return {
         error: true,
       };

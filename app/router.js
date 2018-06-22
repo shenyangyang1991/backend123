@@ -21,4 +21,5 @@ module.exports = app => {
   router.put('/users', controller.users.update);
   router.post('/users', controller.users.create);
   router.get('/users', controller.users.index);
+  router.get('/users/:id/wallet', controller.users.wallet);
 };

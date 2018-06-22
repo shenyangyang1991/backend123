@@ -40,11 +40,24 @@ class UserService extends Service {
         // error
         return null;
       } else {
-        let newUser = await ctx.model.User.saveUser(user);
-        if (newUser && !newUser.error) {
+        try {
+          let newUser = await ctx.model.transaction(async (t) => {
+            let uw = await ctx.model.UserWallet.createWallet({}, t);
+            if (!uw || uw.error) {
+              // error
+              throw new Error('创建用户钱包失败');
+            }
+            user.wallet_id = uw.id;
+            let nu = await ctx.model.User.createUser(user, t);
+            if (!nu || nu.error) {
+              // error
+              throw new Error('创建用户失败');
+            }
+            return nu;
+          });
           return newUser;
-        } else {
-          // error
+        } catch (error) {
+          ctx.logger.error(error);
           return null;
         }
       }
